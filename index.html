@@ -8,28 +8,165 @@
 </head>
 <body>
     <h1>Candy Shop Seller App</h1>
-    <form>
-        <label for="candyName">CandyName</label>
-        <input type="text" id="candyName" name="candyName">
+    <form id="addCandy" onsubmit="addCandy(event)">
+        <label for="name">CandyName</label>
+        <input type="text" id="name" name="name" required>
         <label for="description">Description</label>
-        <input type="text" id="description" name="description">
-        <label for="candyName">Price</label>
-        <input type="number" id="price" name="price">
-        <label for="candyName">Quantity</label>
-        <input type="number" id="quantity" name="quantity">
-        <button type="button" onclick="addCandy()">Add Candy</button>
+        <input type="text" id="description" name="description" required>
+        <label for="price">Price</label>
+        <input type="number" id="price" name="price" required>
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" name="quantity" required>
+        <button>Add Candy</button>
     </form>
-    <br>
-    <button type="button" onclick="removeCandy()">Buy One</button>
-    <button type="button" onclick="removeCandy()">Buy Two</button>
-    <button type="button" onclick="removeCandy()">Buy Three</button>
-    <br>
-
     <ul id="candyList"></ul>
 
     <div id="userInputs"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
-    <script src="app.js"></script> 
+    <script>
+        function addCandy(event){
+            event.preventDefault();
+            const name = event.target.name.value;
+            const desc = event.target.description.value;
+            const price = event.target.price.value;
+            const qty = event.target.quantity.value;
+
+            const obj = {
+                name,
+                desc,
+                price,
+                qty
+            }
+
+            axios.post("https://crudcrud.com/api/55cd353735424d1c9bf6a48971692aa3/candies",obj)
+                .then((response)=>{
+                    showCandiesOnScreen(response.data);
+                    console.log(response.data);
+                })
+                .catch((err)=>{
+                    console.log(err)
+                })
+        }
+
+        window.addEventListener("DOMContentLoaded",()=>{
+            axios.get("https://crudcrud.com/api/55cd353735424d1c9bf6a48971692aa3/candies")
+            .then((response)=> {
+                console.log(response.data);
+
+                for(var i=0; i<response.data.length;i++){
+                    showCandiesOnScreen(response.data[i]);
+                }
+            })
+            .catch((err)=> {
+                console.log(err);
+            })
+
+        })
+
+        function showCandiesOnScreen(obj){
+            const parentElement = document.getElementById('candyList')
+            const childElem= document.createElement('li')
+            childElem.textContent = obj.name + '-' + obj.desc + "-" + obj.price + "-" + obj.qty
+            const buyOne = document.createElement('input')
+            buyOne.type='button'
+            buyOne.value='buy One'
+            buyOne.onclick = () => {
+                obj.qty -=1;
+                childElem.textContent = obj.name + '-' + obj.desc + "-" + obj.price + "-" + obj.qty
+                // axios.put("https://crudcrud.com/api/55cd353735424d1c9bf6a48971692aa3/candies/${obj._id}",obj)
+                //     .then((response)=> {
+                //         console.log(response);
+
+                //     })
+                //     .catch((err)=> {
+                //         console.log(err)
+                //     })
+
+
+
+                // axios.delete("https://crudcrud.com/api/55cd353735424d1c9bf6a48971692aa3/candies",obj._id)
+                //     .then((response)=> {
+                //         console.log(response);
+                //     })
+                //     .catch((err)=> {
+                //         console.log(err)
+                //     })
+
+                
+                // localStorage.removeItem(obj.name)
+                // parentElement.removeChild(childElem)
+            }
+
+            const buyTwo = document.createElement('input')
+            buyTwo.type = 'button'
+            buyTwo.value='buy Two'
+            buyTwo.onclick = () => {
+                obj.qty -=2;
+                childElem.textContent = obj.name + '-' + obj.desc + "-" + obj.price + "-" + obj.qty;
+            }
+
+            const buyThree = document.createElement('input')
+            buyThree.type = 'button'
+            buyThree.value='buy Three'
+            buyThree.onclick = () => {
+                obj.qty -=3;
+                childElem.textContent = obj.name + '-' + obj.desc + "-" + obj.price + "-" + obj.qty;
+            }
+
+            childElem.appendChild(buyOne)
+            childElem.appendChild(buyTwo)
+            childElem.appendChild(buyThree)
+            parentElement.appendChild(childElem)
+        }
+
+        // function attachButtons(elem, obj){
+        //     const buyOne = elem.querySelector('input[value="buy One"]');
+        //     const buyTwo = elem.querySelector('input[value="buy Two"]');
+        //     const buyThree = elem.querySelector('input[value="buy Three"]');
+
+        //     buyOne.onclick = () => {
+        //         obj.qty -= 1;
+        //         axios.put("https://crudcrud.com/api/55cd353735424d1c9bf6a48971692aa3/candies/"+obj._id,obj)
+        //             .then((response)=> {
+        //                 console.log(response);
+        //                 elem.textContent = obj.name + '-' + obj.desc + "-" + obj.price + "-" + obj.qty;
+        //                 attachButtons(elem, obj);
+        //     })
+        //     .catch((err)=> {
+        //         console.log(err)
+        //     })
+        //     }
+
+        //     buyTwo.onclick = () => {
+        //         obj.qty -= 2;
+        //         axios.put("https://crudcrud.com/api/55cd353735424d1c9bf6a48971692aa3/candies/"+obj._id,obj)
+        //             .then((response)=> {
+        //                 console.log(response);
+        //                 elem.textContent = obj.name + '-' + obj.desc + "-" + obj.price + "-" + obj.qty;
+        //                 attachButtons(elem, obj);
+        //     })
+        //     .catch((err)=> {
+        //         console.log(err)
+        //     })
+        //     }
+
+        //     buyThree.onclick = () => {
+        //         obj.qty -= 3;
+        //         axios.put("https://crudcrud.com/api/55cd353735424d1c9bf6a48971692aa3/candies/"+obj._id,obj)
+        //             .then((response)=> {
+        //                 console.log(response);
+        //                 elem.textContent = obj.name + '-' + obj.desc + "-" + obj.price + "-" + obj.qty;
+        //                 attachButtons(elem, obj);
+        //     })
+        //     .catch((err)=> {
+        //         console.log(err)
+        //     })
+        //     }
+        // }
+
+
+
+    </script>
     
     
 
